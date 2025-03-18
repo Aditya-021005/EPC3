@@ -269,6 +269,38 @@
     border-color: #ffd700;
     transition: border-color 0.3s ease;
 }
+@keyframes fadeOutScale {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+}
+
+/* Fade In */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Apply the animations */
+.fade-out {
+    animation: fadeOutScale 0.5s ease forwards;
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
 
   </style>
 </head>
@@ -338,6 +370,15 @@
       options.appendChild(option);
     }
   }
+  function goToRegistration() {
+    const mainContainer = document.getElementById('mainContainer');
+    mainContainer.classList.add('fade-out');
+
+    setTimeout(() => {
+        window.location.href = 'registration.html';
+    }, 500); // Match fadeOutScale duration
+}
+
 
   
     
