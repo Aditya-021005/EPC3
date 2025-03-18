@@ -24,7 +24,7 @@
         .game-container {
     background-color: rgba(255, 255, 255, 0.1); /* Very light white tint */
     backdrop-filter: blur(10px); /* Subtle blur for a frosted glass effect */
-    padding: 30px;
+    padding: 40px;
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Softer shadow */
     text-align: center;
@@ -55,8 +55,8 @@
 
         /* Question Image */
         .question-img {
-            width: 280px;
-            height: 280px;
+            width: 480px;
+            height: 480px;
             border: 3px solid #ffd700;
             border-radius: 10px;
             margin: 20px 0;
@@ -91,12 +91,163 @@
             background-color: #7f0877;
             
         }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+/* Loading Overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease;
+}
+
+/* Spinner Animation */
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #ffffff;
+    border-top-color: #e87218;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Spin Keyframe */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Fade-in Effect for Overlay */
+.show-loading {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Timer Styling */
+.timer {
+    font-size: 28px; /* Increased font size */
+    font-weight: bold;
+    background-color: #ffd700; /* Gold background */
+    color: #1c0032; /* Deep purple for contrast */
+    padding: 10px 20px;
+    border-radius: 12px;
+    display: inline-block;
+    margin: 5px 10px;
+    border: 2px solid #ffcc00; /* Gold border */
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.7); /* Gold glow */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* When timer is under 30 seconds */
+.timer.warning {
+    background-color: #ff4d4d; /* Red background */
+    color: #ffffff; /* White text */
+    border-color: #ff0000;
+    animation: pulse 1s infinite;
+}
+
+/* Pulse Animation for Timer */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 25px rgba(255, 0, 0, 1);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+    }
+}
+/* Flex container for buttons */
+.button-container {
+    display: flex;
+    justify-content: center; /* Center buttons horizontally */
+    align-items: center;
+    gap: 20px; /* Add space between buttons */
+    margin-top: 20px;
+}
+
+/* Back Button */
+.back-btn {
+    background-color: transparent;
+    color: #ffffff;
+    font-size: 18px;
+    padding: 10px 20px;
+    border: 2px solid #ffffff;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.back-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+/* Pause Button */
+#pause-btn {
+    background-color: #db1cae;
+    color: #ffffff;
+    font-size: 18px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#pause-btn:hover {
+    background-color: #6a1bbd;
+    transform: scale(1.05);
+}
+
+/* Fade-out Animation */
+.fade-out {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+
+
+
     </style>
 </head>
 <body>
-
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+    
     <div class="game-container">
-        <h1>Seconds to Survive</h1>
         <div>
             <span class="timer" id="timer1">${player1}: 2:00</span>
             <span class="timer" id="timer2">${player2}: 2:00</span>
@@ -104,12 +255,20 @@
         <img id="question-img" class="question-img" src="christredeemer.jpg" alt="Question">
         <div>
         </div>
-        <button id="pause-btn" class="game-btn" onclick="togglePause()">⏸️ Pause</button>
+        <div class="button-container">
+            <button class="back-btn" onclick="goBack()">⬅️ Back</button>
+            <button id="pause-btn" class="game-btn" onclick="togglePause()">⏸️ Pause</button>
+        </div>
+        
+
     </div>
     
 
     <audio id="wrong-sound" src="wrong.mp3"></audio>
     <audio id="correct-sound" src="correct.mp3"></audio>
+    <audio id="tick-tock-sound" src="tick-tock-31883.mp3" loop></audio>
+
+
 
     <script>
          let player1 = localStorage.getItem("player1") || "User 1";
@@ -128,16 +287,27 @@ let scores = { 1: 0, 2: 0 }; // Track scores
 let interval;
 let isPaused = false;
 let isAnswerShown = false;
+let tickTockSound = document.getElementById("tick-tock-sound");
 
 function startTimer() {
     interval = setInterval(() => {
         if (!isPaused && !isAnswerShown) {
             timers[currentUser]--;
+
+            // Start tick-tock sound when timer reaches 30 seconds
+            if (timers[currentUser] === 30) {
+                document.getElementById("tick-tock-sound").play();
+            }
+
+            // Stop tick-tock sound when timer ends
             if (timers[currentUser] <= 0) {
+                tickTockSound.pause();
+                tickTockSound.currentTime = 0; // Reset sound
                 clearInterval(interval);
                 alert(`User ${currentUser} time over!`);
                 endGame();
             }
+
             updateUI();
         }
     }, 1000);
@@ -177,6 +347,10 @@ function showAnswer(isCorrect) {
     clearInterval(interval);
     isAnswerShown = true;
 
+    // Stop tick-tock sound if it's playing
+    tickTockSound.pause();
+    tickTockSound.currentTime = 0;
+
     let answerText = document.createElement("div");
     answerText.id = "answer-text";
     answerText.textContent = `Answer: ${answers[questions[currentIndex]]}`;
@@ -191,8 +365,19 @@ function showAnswer(isCorrect) {
 
     setTimeout(() => {
         answerText.remove();
-        nextQuestion(); // Always go to the next question, but keep the same user
+        nextQuestion(); 
     }, 2000);
+}
+
+function endGame() {
+    clearInterval(interval);
+
+    // Stop tick-tock sound if playing
+    tickTockSound.pause();
+    tickTockSound.currentTime = 0;
+
+    document.querySelector(".game-container").style.display = "none";
+    // ... rest of the endGame code
 }
 
 
@@ -218,7 +403,18 @@ function switchUser() {
 
 function togglePause() {
     isPaused = !isPaused;
-    document.getElementById("pause-btn").textContent = isPaused ? "▶️ Resume" : "⏸️ Pause";
+
+    if (isPaused) {
+        // Pause tick-tock sound
+        tickTockSound.pause();
+        document.getElementById("pause-btn").textContent = "▶️ Resume";
+    } else {
+        // Resume tick-tock sound only if time is <= 30 seconds
+        if (timers[currentUser] <= 30) {
+            tickTockSound.play().catch(error => console.log("Audio play prevented:", error));
+        }
+        document.getElementById("pause-btn").textContent = "⏸️ Pause";
+    }
 }
 
 function endGame() {
@@ -273,4 +469,30 @@ document.addEventListener("keydown", (event) => {
 });
 
 startTimer();
+window.onload = () => {
+    document.querySelector('.game-container').classList.add('fade-in');
+};
+function redirectToGame() {
+    const loadingOverlay = document.getElementById('loading-overlay');
+    
+    // Show loading spinner
+    loadingOverlay.classList.add('show-loading');
+
+    // Wait for 2 seconds before redirecting
+    setTimeout(() => {
+        window.location.href = "index.html"; // Redirect after animation
+    }, 2000);
+}
+function goBack() {
+    const container = document.querySelector('.game-container');
+    
+    // Add fade-out effect
+    container.classList.add('fade-out');
+
+    // Redirect after animation ends
+    setTimeout(() => {
+        window.location.href = 'registration.html';
+    }, 500); // Match the transition duration
+}
+
     </script>
