@@ -28,7 +28,7 @@
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Softer shadow */
     text-align: center;
-    max-width: 600px;
+    max-width: 700px;
     width: 90%;
 }
 
@@ -236,6 +236,50 @@
     transform: translateY(10px);
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
+/* Winner Container */
+.winner-container {
+    background-color: rgba(255, 255, 255, 0.1); /* Light white tint */
+    backdrop-filter: blur(10px); /* Frosted glass effect */
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    text-align: center;
+    max-width: 600px;
+    width: 90%;
+    color: #ffffff;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* Show Winner Container */
+.show-winner {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Restart Button */
+.winner-btn {
+    background-color: #e87218;
+    color: #ffffff;
+    font-size: 18px;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 20px;
+    box-shadow: 0 0 15px rgba(106, 13, 173, 0.6);
+}
+
+.winner-btn:hover {
+    background-color: #8a2be2;
+    transform: translateY(-3px);
+}
 
 
 
@@ -419,45 +463,59 @@ function togglePause() {
 
 function endGame() {
     clearInterval(interval);
+    
+    // Hide the game container
     document.querySelector(".game-container").style.display = "none";
 
+    // Create winner container
     let winnerContainer = document.createElement("div");
     winnerContainer.classList.add("winner-container");
 
+    // Title
     let winnerTitle = document.createElement("h1");
     winnerTitle.textContent = "Game Over!";
     winnerTitle.style.color = "#ffd700";
 
+    // Message
     let winnerMessage = document.createElement("h2");
-if (scores[1] > scores[2]) {
-    winnerMessage.textContent = `🏆 Winner: ${player1}!`;
-} else if (scores[2] > scores[1]) {
-    winnerMessage.textContent = `🏆 Winner: ${player2}!`;
-} else {
-    winnerMessage.textContent = "🤝 It's a Tie!";
-}
+    if (scores[1] > scores[2]) {
+        winnerMessage.textContent = `🏆 Winner: ${player1}!`;
+    } else if (scores[2] > scores[1]) {
+        winnerMessage.textContent = `🏆 Winner: ${player2}!`;
+    } else {
+        winnerMessage.textContent = "🤝 It's a Tie!";
+    }
 
-
+    // Final Scores
     let finalScores = document.createElement("p");
-    finalScores.textContent = `Final Scores: User 1: ${scores[1]} | User 2: ${scores[2]}`;
+    finalScores.textContent = `Final Scores: ${player1}: ${scores[1]} | ${player2}: ${scores[2]}`;
     finalScores.style.fontSize = "20px";
     finalScores.style.margin = "15px 0";
 
+    // Restart Button
     let restartButton = document.createElement("button");
     restartButton.textContent = "🔄 Play Again";
-    restartButton.classList.add("game-btn");
+    restartButton.classList.add("winner-btn");
     restartButton.onclick = () => {
-    window.location.href = "index.html"; // Change to your desired page
-};
+        window.location.href = "game.html";
+    };
 
+    // Append elements to container
     winnerContainer.appendChild(winnerTitle);
     winnerContainer.appendChild(winnerMessage);
     winnerContainer.appendChild(finalScores);
     winnerContainer.appendChild(restartButton);
 
+    // Add container to body
     document.body.appendChild(winnerContainer);
+
+    // Fade-in animation for the winner screen
+    setTimeout(() => {
+        winnerContainer.classList.add('show-winner');
+    }, 100);
 }
 
+// Event listeners for keyboard controls
 document.addEventListener("keydown", (event) => {
     if (event.key === "ArrowLeft") {
         wrongAnswer();
@@ -467,6 +525,7 @@ document.addEventListener("keydown", (event) => {
         togglePause();
     }
 });
+
 
 startTimer();
 window.onload = () => {
