@@ -189,7 +189,87 @@
     .option:hover {
       background-color: #8a2be2;
     }
-    
+    /* Fade-In and Fade-Out Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+/* Slide-In Animation */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Main Container Transition */
+.main-container, .selection-container, .subcategory-container, .quiz-container {
+    opacity: 0;
+    animation: fadeIn 0.6s ease forwards;
+}
+
+/* Category Cards - Slide-In */
+.category-card {
+    animation: slideIn 0.5s ease forwards;
+    opacity: 0;
+}
+
+/* Add slight delay for staggered effect */
+.category-card:nth-child(1) { animation-delay: 0.1s; }
+.category-card:nth-child(2) { animation-delay: 0.2s; }
+.category-card:nth-child(3) { animation-delay: 0.3s; }
+
+/* Button Hover Animation */
+.proceed-btn, .game-btn {
+    background-color: #6a0dad;
+    color: white;
+    padding: 14px 30px;
+    font-size: 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 0 20px rgba(106, 13, 173, 0.6);
+}
+
+.proceed-btn:hover, .game-btn:hover {
+    background-color: #8a2be2;
+    transform: translateY(-3px);
+}
+
+/* Fade-Out Class (JS Triggered) */
+.fade-out {
+    animation: fadeOut 0.5s ease forwards;
+}
+
+/* Input Field Focus Animation */
+.container input:focus {
+    border-color: #ffd700;
+    transition: border-color 0.3s ease;
+}
+
   </style>
 </head>
 <body>
