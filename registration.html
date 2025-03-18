@@ -101,6 +101,54 @@
         .fade-out {
             animation: fadeOut 0.5s ease forwards;
         }
+/* Flex container for buttons */
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px; /* Space between buttons */
+    margin-top: 30px;
+}
+
+/* Common Button Styling */
+.button-container button {
+    font-size: 18px;
+    font-weight: 600;
+    padding: 12px 30px; /* Ensure equal padding */
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    height: 50px; /* Consistent height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Back Button */
+.back-btn {
+    background-color: transparent;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+}
+
+.back-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+/* Start Game Button */
+.game-btn {
+    background-color: #8a2be2;
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 0 15px rgba(138, 43, 226, 0.6);
+}
+
+.game-btn:hover {
+    background-color: #6a1bbd;
+    transform: scale(1.05);
+}
+
     </style>
 </head>
 <body>
@@ -109,7 +157,10 @@
         <h2>Enter Your Names</h2>
         <input type="text" id="player1" placeholder="Player 1 Name" required>
         <input type="text" id="player2" placeholder="Player 2 Name" required>
+        <div class="button-container">
+        <button class="back-btn" onclick="goBack()">⬅️ Back</button>
         <button class="game-btn" onclick="startGame()">Start Game</button>
+    </div>
     </div>
 
     <script>
@@ -140,6 +191,18 @@
         window.onload = () => {
             document.querySelector('.container').classList.add('fade-in');
         };
+        function goBack() {
+    const container = document.querySelector('.container');
+    
+    // Add fade-out effect
+    container.classList.add('fade-out');
+
+    // Redirect after animation ends
+    setTimeout(() => {
+        window.location.href = 'index.html';
+    }, 500); // Match the transition duration
+}
+
     </script>
 
 </body>
