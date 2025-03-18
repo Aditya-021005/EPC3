@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seconds to Survive - Game</title>
+    <style>
+        /* General Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1c0032;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: url('23982.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        /* Game Container */
+        .game-container {
+            background-color: #4b0082;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        /* Timers */
+        .timer {
+            font-size: 22px;
+            font-weight: bold;
+            background-color: #5a007a;
+            padding: 8px 15px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 10px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Question Image */
+        .question-img {
+            width: 280px;
+            height: 280px;
+            border: 3px solid #ffd700;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+        }
+
+        /* Buttons */
+        .game-btn {
+            background-color: #6a0dad;
+            color: #ffffff;
+            padding: 12px 25px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin: 5px;
+            box-shadow: 0 0 15px rgba(106, 13, 173, 0.6);
+        }
+
+        .game-btn:hover {
+            background-color: #8a2be2;
+            transform: translateY(-3px);
+        }
+
+        /* Pause Button */
+        #pause-btn {
+            background-color: #dc3545;
+        }
+
+        #pause-btn:hover {
+            background-color: #ff4b5c;
+            
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>Seconds to Survive</h1>
+        <div>
+            <span class="timer" id="timer1">${player1}: 2:00</span>
+            <span class="timer" id="timer2">${player2}: 2:00</span>
+        </div>
+        <img id="question-img" class="question-img" src="christredeemer.jpg" alt="Question">
+        <div>
+            <button class="game-btn" onclick="wrongAnswer()">⬅️ Wrong</button>
+            <button class="game-btn" onclick="correctAnswer()">➡️ Correct</button>
+        </div>
+        <button id="pause-btn" class="game-btn" onclick="togglePause()">⏸️ Pause</button>
+    </div>
+    
+
+    <audio id="wrong-sound" src="wrong.mp3"></audio>
+    <audio id="correct-sound" src="correct.mp3"></audio>
+
+    <script>
+         let player1 = localStorage.getItem("player1") || "User 1";
+         let player2 = localStorage.getItem("player2") || "User 2";
+let questions = ["christredeemer.jpg", "tajmahal.jpg", "eiffel.jpg", "redfort.jpg"];
+let answers = {
+    "christredeemer.jpg": "Christ the Redeemer, Brazil",
+    "tajmahal.jpg": "Taj Mahal, India",
+    "eiffel.jpg": "Eiffel Tower, France",
+    "redfort.jpg": "Red Fort, India",
+}; 
+let currentIndex = 0;
+let currentUser = 1;
+let timers = { 1: 120, 2: 120 };
+let scores = { 1: 0, 2: 0 }; // Track scores
+let interval;
+let isPaused = false;
+let isAnswerShown = false;
+
+function startTimer() {
+    interval = setInterval(() => {
+        if (!isPaused && !isAnswerShown) {
+            timers[currentUser]--;
+            if (timers[currentUser] <= 0) {
+                clearInterval(interval);
+                alert(`User ${currentUser} time over!`);
+                endGame();
+            }
+            updateUI();
+        }
+    }, 1000);
+}
+
+function updateUI() {
+    document.getElementById("timer1").textContent = `${player1}: ${formatTime(timers[1])} | Score: ${scores[1]}`;
+    document.getElementById("timer2").textContent = `${player2}: ${formatTime(timers[2])} | Score: ${scores[2]}`;
+}
+
+function formatTime(seconds) {
+    let min = Math.floor(seconds / 60);
+    let sec = seconds % 60;
+    return `${min}:${sec < 10 ? "0" : ""}${sec}`;
+}
+
+function correctAnswer() {
+    document.getElementById("correct-sound").play();
+    scores[currentUser] += 10; // Increase score for correct answer
+    showAnswer(true);
+
+    // SWITCH USER because answer is correct
+    switchUser();
+}
+
+
+function wrongAnswer() {
+    document.getElementById("wrong-sound").play();
+    timers[currentUser] -= 5; // Time penalty for wrong answer
+    updateUI();
+    showAnswer(false);
+
+    // DO NOT SWITCH USER (User stays the same)
+}
+
+function showAnswer(isCorrect) {
+    clearInterval(interval);
+    isAnswerShown = true;
+
+    let answerText = document.createElement("div");
+    answerText.id = "answer-text";
+    answerText.textContent = `Answer: ${answers[questions[currentIndex]]}`;
+    answerText.style.fontSize = "20px";
+    answerText.style.fontWeight = "bold";
+    answerText.style.marginTop = "10px";
+    answerText.style.padding = "10px";
+    answerText.style.borderRadius = "8px";
+    answerText.style.backgroundColor = isCorrect ? "#28a745" : "#dc3545";
+
+    document.querySelector(".game-container").appendChild(answerText);
+
+    setTimeout(() => {
+        answerText.remove();
+        nextQuestion(); // Always go to the next question, but keep the same user
+    }, 2000);
+}
+
+
+
+
+function nextQuestion() {
+    currentIndex++;
+
+    if (currentIndex >= questions.length) {
+        endGame();
+        return;
+    }
+
+    document.getElementById("question-img").src = questions[currentIndex];
+
+    isAnswerShown = false;
+    startTimer();
+}
+
+function switchUser() {
+    currentUser = currentUser === 1 ? 2 : 1;
+}
+
+function togglePause() {
+    isPaused = !isPaused;
+    document.getElementById("pause-btn").textContent = isPaused ? "▶️ Resume" : "⏸️ Pause";
+}
+
+function endGame() {
+    clearInterval(interval);
+    document.querySelector(".game-container").style.display = "none";
+
+    let winnerContainer = document.createElement("div");
+    winnerContainer.classList.add("winner-container");
+
+    let winnerTitle = document.createElement("h1");
+    winnerTitle.textContent = "Game Over!";
+    winnerTitle.style.color = "#ffd700";
+
+    let winnerMessage = document.createElement("h2");
+if (scores[1] > scores[2]) {
+    winnerMessage.textContent = `🏆 Winner: ${player1}!`;
+} else if (scores[2] > scores[1]) {
+    winnerMessage.textContent = `🏆 Winner: ${player2}!`;
+} else {
+    winnerMessage.textContent = "🤝 It's a Tie!";
+}
+
+
+    let finalScores = document.createElement("p");
+    finalScores.textContent = `Final Scores: User 1: ${scores[1]} | User 2: ${scores[2]}`;
+    finalScores.style.fontSize = "20px";
+    finalScores.style.margin = "15px 0";
+
+    let restartButton = document.createElement("button");
+    restartButton.textContent = "🔄 Play Again";
+    restartButton.classList.add("game-btn");
+    restartButton.onclick = () => {
+    window.location.href = "index.html"; // Change to your desired page
+};
+
+    winnerContainer.appendChild(winnerTitle);
+    winnerContainer.appendChild(winnerMessage);
+    winnerContainer.appendChild(finalScores);
+    winnerContainer.appendChild(restartButton);
+
+    document.body.appendChild(winnerContainer);
+}
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") {
+        wrongAnswer();
+    } else if (event.key === "ArrowRight") {
+        correctAnswer();
+    } else if (event.key === " ") {
+        togglePause();
+    }
+});
+
+startTimer();
+
+
+    </script>
