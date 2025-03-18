@@ -16,24 +16,28 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background: url('23982.jpg') no-repeat center center fixed;
+            background: url('23983.jpg') no-repeat center center fixed;
             background-size: cover;
         }
 
         /* Game Container */
         .game-container {
-            background-color: #4b0082;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            max-width: 600px;
-            width: 90%;
-        }
+    background-color: rgba(255, 255, 255, 0.1); /* Very light white tint */
+    backdrop-filter: blur(10px); /* Subtle blur for a frosted glass effect */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Softer shadow */
+    text-align: center;
+    max-width: 600px;
+    width: 90%;
+}
+
+
+
 
         h1 {
             font-size: 36px;
-            color: #ffd700;
+            color: #ffffff;
             margin-bottom: 10px;
         }
 
@@ -61,7 +65,7 @@
 
         /* Buttons */
         .game-btn {
-            background-color: #6a0dad;
+            background-color: #e87218;
             color: #ffffff;
             padding: 12px 25px;
             font-size: 18px;
@@ -80,11 +84,11 @@
 
         /* Pause Button */
         #pause-btn {
-            background-color: #dc3545;
+            background-color: #d13fd1;
         }
 
         #pause-btn:hover {
-            background-color: #ff4b5c;
+            background-color: #7f0877;
             
         }
     </style>
@@ -99,8 +103,6 @@
         </div>
         <img id="question-img" class="question-img" src="christredeemer.jpg" alt="Question">
         <div>
-            <button class="game-btn" onclick="wrongAnswer()">⬅️ Wrong</button>
-            <button class="game-btn" onclick="correctAnswer()">➡️ Correct</button>
         </div>
         <button id="pause-btn" class="game-btn" onclick="togglePause()">⏸️ Pause</button>
     </div>
@@ -271,6 +273,4 @@ document.addEventListener("keydown", (event) => {
 });
 
 startTimer();
-
-
     </script>
